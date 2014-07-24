@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>SBHS App</title>
+		{?development}
+		<link rel="stylesheet/less" type="text/css" href="/static/less/style.less" />
+
+	    <script type="text/javascript">
+	    	less = {
+	    		env:'development'
+	    	}
+	    </script>
+	    <script src="/static/js/less.min.js"></script>
+	    {/development}
+	    {^development}
+	    <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
+	    {/development}
+	</head>
+	<body>
+		<ul class="navbar"></ul>
+		<div id="wrapper">
+			{+body/}
+		</div>
+	</body>
+
+</html>

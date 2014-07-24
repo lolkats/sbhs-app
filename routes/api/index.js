@@ -14,7 +14,7 @@ function yyyymmdd(dateIn) {
 
 function updateApiCache(){
 	var y = (new Date()).getFullYear();
-	var m = (new Date()).getMonth+1);
+	var m = (new Date().getMonth+1);
 	var eod = (new Date()).setHours(15,15,0,0);
 	// Calendar
 	request("https://student.sbhs.net.au/api/calendar/days.json?from="+y+"-01-01&to="+y+"-12-31",function(err,response,body){
@@ -26,68 +26,63 @@ function updateApiCache(){
 			cal = JSON.parse(body);
 			apiCache.calendar = cal;
 			// Calculate yyyymmdd
-			var todayDate = yyyymmdd(new Date());
-			function calculateNextDay(){
-				if(apiCache.calendar[todayDate].dayNumber == 0){
-					todayDate = new Date();
-					todayDate.setDate(todayDate.getDate() + 1);
-					todayDate = yyyymmdd(todayDate);
-					calculateNextDay(todayDate);
-				}
-				else if(apiCache.calendar[todayDate].dayNumber != 0 && (new Date()).getTime() >= eod && todayDate == yyyymmdd(new Date())){
-					todayDate = new Date();
-					todayDate.setDate(todayDate.getDate() + 1);
-					todayDate = yyyymmdd(todayDate);
-					calculateNextDay(todayDate);
-				}
-			}
-			calculateNextDay();
-			// Bells
-			request("https://student.sbhs.net.au/api/timetable/bells.json?date="+ todayDate,function(err,response,body){
-				if(err || response.statusCode != 200){
-					console.log(err);
-					return;
-				}
-				else{
-					bell = JSON.parse(body);
-					apiCache.bells = bell;
-				}
-			});
+
+			apiCache.updatedAt = (new Date()).getTime();
+			apiCache.updatedYear = (new Date()).getFullYear();
+		}
+	});
+	// Calendar next year
+	request("https://student.sbhs.net.au/api/calendar/days.json?from="+(y+1)+"-01-01&to="+(y+1)+"-12-31",function(err,response,body){
+		if(err || response.statusCode != 200){
+			console.log(err);
+			return;
+		}
+		else{
+			cal = JSON.parse(body);
+			apiCache.calendarNextYear = cal;
+			// Calculate yyyymmdd
+
 			apiCache.updatedAt = (new Date()).getTime();
 			apiCache.updatedYear = (new Date()).getFullYear();
 		}
 	});
 
 
-
 };
 updateApiCache();
-// 30 min update
-setInterval(updateApiCache,1000*60*30);
+// 24 hour update
+setInterval(updateApiCache,1000*60*60*24);
 module.exports = function(app,models,api){
 	var router = app.Router();
 	router.get("/daytimetable",function(req,res){
 
 	});
-	router.get("/bells",function(req,res){
-		if(apiCache.updatedAt < (new Date()).setHours(15,15,0,0) && (new Date()).getTime() >= (new Date()).setHours(15,15,0,0)){
+	router.get("/calendaryear",function(req,res){
+		if(apiCache.updatedYear != new Date().getFullYear()){
+			updateApiCache();
+			res.json({err:true,action:"reload"});
+		}
+		else if(!apiCache.calendar){
 			updateApiCache();
 			res.json({err:true,action:"reload"});
 		}
 		else{
-			res.json(apiCache.bells);
+			res.json(apiCache.calendar);
 		}
 		
 	});
-	router.get("/bells",function(req,res){
-		if(apiCache.updatedYear < new Date()){
+	router.get("/calendarnextyear",function(req,res){
+		if(apiCache.updatedYear != new Date().getFullYear()){
+			updateApiCache();
+			res.json({err:true,action:"reload"});
+		}
+		else if(!apiCache.calendarNextYear){
 			updateApiCache();
 			res.json({err:true,action:"reload"});
 		}
 		else{
-			res.json(apiCache.bells);
+			res.json(apiCache.calendarNextYear);
 		}
-		
-	})
+	});
 	app.use("/api",router);
 };

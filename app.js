@@ -1,6 +1,7 @@
 GLOBAL.rootDir = __dirname;
 
 var config = require('./config');
+var request = require('request');
 var express = require('express');
 var passport = require('passport');
 var path = require('path');
@@ -13,7 +14,7 @@ var bodyParser = require('body-parser');
 
 var models = require('./lib/db')(config.db).models;
 var sbhsAPI = require('./lib/api');
-var sbhs = sbhsAPI.Strategy(config.sbhs);
+var sbhs = sbhsAPI.Strategy(config.sbhs,models);
 var app = express();
 
 passport.serializeUser(function(user,done){done(null,user)});
@@ -49,12 +50,14 @@ if (app.get('env') === 'development'){
     app.use(require('st')({ path: __dirname + '/public',
          url: '/static', 
          index: false,
+        content: {
+          max: 0, // how much memory to use on caching contents
+          maxAge: 0, // how long to cache contents for
+                                  // if `false` does not set cache control headers
+          cacheControl: 'no-cache' // to set an explicit cache-control
+        },
          cache: false
     }));
-    app.use(function(req,res,next){
-        res.locals.development = true;
-        next();
-    });
     app.set('view engine', 'dust');
     app.engine('dust', require('adaro').dust({cache: false}));
 }
@@ -68,8 +71,52 @@ app.use(cookieParser());
 app.use(session(config.session));
 app.use(passport.initialize());
 app.use(passport.session());
-
 passport.use(sbhs);
+app.use(function(req,res,next){
+    req.sbhsAPI = sbhs;
+    req.getTokens = function(done) {
+      var self = this;
+      var tokens = this.user.tokens;
+        if (new Date().valueOf() < this.user.tokens.expires) {
+            done(null, tokens);
+        } else {
+
+        request.post({
+            url: 'https://student.sbhs.net.au/api/token',
+            form: {
+              refresh_token: tokens.refreshToken,
+              client_id: config.sbhs.clientID,
+              client_secret: config.sbhs.clientSecret,
+              grant_type:'refresh_token'
+          }
+
+      }, function (err, response, body) {
+        if(err) return done(err);
+
+
+        var result = JSON.parse(body);
+        models.User.find({user:self.user.username},function(err,db){
+          db.accessToken = result.access_token;
+          db.save(function(){});
+        });
+        var now = new Date();
+        var newTokens = {accessToken: result.access_token, refreshToken: tokens.refreshToken, expires: (new Date(now.getTime() + (result.expires_in * 1000))).valueOf()};
+        self.user.tokens = newTokens;
+
+            return done(null, newTokens);
+
+        });
+
+
+
+      }
+    };
+    if(req.user){
+      res.locals.authenticated = true;
+    }
+    next();
+});
+
 
 app.Router = express.Router;
 var router = app.Router();
@@ -78,7 +125,7 @@ router.Router = app.Router;
 fs.readdirSync(rootDir+'/routes/').forEach(function(file) {
     fs.stat(rootDir+'/routes/'+file,function(err,stat){
         if(stat.isDirectory()){
-            require("./routes/"+file)(router,models,sbhs);
+            require("./routes/"+file)(router,models);
         }
 
     });

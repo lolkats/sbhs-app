@@ -1,26 +1,29 @@
 <!DOCTYPE HTML>
-<html>
+	{! {?authenticated}
+	<html manifest="/static/manifest.appcache">
+	{/authenticated}
+	{^authenticated}
+	<html>
+	{/authenticated} !}
+	<html>
 	<head>
 		<title>SBHS App</title>
-		{?development}
-		<link rel="stylesheet/less" type="text/css" href="/static/less/style.less" />
-
-	    <script type="text/javascript">
-	    	less = {
-	    		env:'development'
-	    	}
-	    </script>
-	    <script src="/static/js/less.min.js"></script>
-	    {/development}
-	    {^development}
-	    <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
-	    {/development}
+	    <link rel="stylesheet" type="text/css" href="/static/css/style.min.css" />
+	    {+head/}
 	</head>
 	<body>
-		<ul class="navbar"></ul>
 		<div id="wrapper">
 			{+body/}
 		</div>
+		<script type="text/javascript" src="/static/js/vendor/jquery.min.js"></script>
+		{?authenticated} <script type="text/javascript">
+			window.authenticated=!0;
+			var timetable;
+			var daytimetable;
+		</script>
+		<script type="text/javascript" src="/static/js/timetable.min.js"></script>
+		{/authenticated}
+		{+scripts/}
 	</body>
 
 </html>

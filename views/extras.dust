@@ -1,0 +1,22 @@
+{>"layouts/default" /}
+{<body}
+<h1>Random Extras</h1>
+<h3>Print Timetable</h3>
+<div id="generateTT">
+	<div id="generatedTT"></div>
+</div>
+{/body}
+{<scripts}
+<script type="text/javascript">
+function printdiv(printpage){
+	var headstr = "<html><head><title></title></head><body>";
+	var footstr = "</body>";
+	var newstr = document.getElementById(printpage).innerHTML;
+	var oldstr = document.body.innerHTML;
+	document.body.innerHTML = headstr+newstr+footstr;
+	window.print();
+	document.body.innerHTML = oldstr;
+	return false;
+};
+</script>
+{/scripts}

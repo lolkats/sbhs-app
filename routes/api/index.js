@@ -52,19 +52,50 @@ function updateApiCache(){
 updateApiCache();
 // 24 hour update
 setInterval(updateApiCache,1000*60*60*24);
-module.exports = function(app,models,api){
+module.exports = function(app,models){
 	var router = app.Router();
 	router.get("/daytimetable",function(req,res){
-
+		var date;
+		if(req.user){
+			req.getTokens(function(err,token){
+				req.sbhsAPI.day(req.user.tokens.accessToken,function(err,o){
+	                if (!err && o) {
+	                    res.json(o);
+	                } else {
+	                    res.status(500).send(err);
+	                }
+				},req.query.date);
+			});
+		}
+		else{
+			res.json({status:false,reason:"access_denied"},401);
+		}
 	});
+	router.get("/timetable",function(req,res){
+		var date;
+		if(req.user){
+			req.getTokens(function(err,token){
+				req.sbhsAPI.timetable(req.user.tokens.accessToken,function(err,o){
+	                if (!err && o) {
+	                    res.json(o);
+	                } else {
+	                    res.status(500).send(err);
+	                }
+				});
+			});
+		}
+		else{
+			res.json({status:false,reason:"access_denied"},401);
+		}
+	});	
 	router.get("/calendaryear",function(req,res){
 		if(apiCache.updatedYear != new Date().getFullYear()){
 			updateApiCache();
-			res.json({err:true,action:"reload"});
+			res.json({err:true,reason:"reload"});
 		}
 		else if(!apiCache.calendar){
 			updateApiCache();
-			res.json({err:true,action:"reload"});
+			res.json({err:true,reason:"reload"});
 		}
 		else{
 			res.json(apiCache.calendar);
@@ -74,11 +105,11 @@ module.exports = function(app,models,api){
 	router.get("/calendarnextyear",function(req,res){
 		if(apiCache.updatedYear != new Date().getFullYear()){
 			updateApiCache();
-			res.json({err:true,action:"reload"});
+			res.json({err:true,reason:"reload"});
 		}
 		else if(!apiCache.calendarNextYear){
 			updateApiCache();
-			res.json({err:true,action:"reload"});
+			res.json({err:true,reason:"reload"});
 		}
 		else{
 			res.json(apiCache.calendarNextYear);

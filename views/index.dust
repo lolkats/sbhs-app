@@ -1,4 +1,8 @@
 {>"layouts/default" /}
 {<body}
-	<h1>N</h1>
+	<h1>Test</h1>
+	<div id="counter" class="center-block"></div>
 {/body}
+{<scripts}
+	<script type="text/javascript" src="/static/js/counter.min.js"></script>
+{/scripts}

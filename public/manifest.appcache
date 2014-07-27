@@ -1,0 +1,14 @@
+CACHE MANIFEST
+
+# Generated on Sun Jul 27 2014 20:10:04 GMT+1000 (EST)
+
+CACHE:
+
+/static/css/style.min.css
+/static/js/vendor/jquery.min.js
+/static/js/counter.min.js
+/static/js/timetable.min.js
+
+NETWORK:
+/
+*

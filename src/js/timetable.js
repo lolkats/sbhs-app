@@ -55,15 +55,16 @@ function generatePrintableTimetable(element,options){
     timetableWeeks[week].push(todayTT);
   });
   function generateTable(tt){
-    var table = document.createElement('table');
-    table.className = 'table';
+    var table = document.createElement('div');
+
     Object.keys(tt).forEach(function(week){
       weekName = week;
       week = tt[week];
       var tr = document.createElement('tr');
+      table.className = 'table';
       var weekTd = document.createElement('td');
       weekTd.innerHTML = "Week "+weekName;
-      tr.appendChild(weekTd);
+      //tr.appendChild(weekTd);
       week.forEach(function(day){
         var dayTr = document.createElement('tr');
         var dayTd = document.createElement('td');

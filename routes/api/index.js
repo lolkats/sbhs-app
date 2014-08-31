@@ -71,6 +71,23 @@ module.exports = function(app,models){
 			res.json({status:false,reason:"access_denied"},401);
 		}
 	});
+	router.get("/dailynotices",function(req,res){
+		var date;
+		if(req.user){
+			req.getTokens(function(err,token){
+				req.sbhsAPI.dailyNotices(req.user.tokens.accessToken,function(err,o){
+	                if (!err && o) {
+	                    res.json(o);
+	                } else {
+	                    res.status(500).send(err);
+	                }
+				},req.query.date);
+			});
+		}
+		else{
+			res.json({status:false,reason:"access_denied"},401);
+		}
+	});
 	router.get("/timetable",function(req,res){
 		var date;
 		if(req.user){

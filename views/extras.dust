@@ -12,6 +12,8 @@ function printdiv(printpage){
 	var headstr = "<html><head><title></title></head><body>";
 	var footstr = "</body>";
 	var newstr = document.getElementById(printpage).innerHTML;
+	newstr.class = document.getElementById(printpage).class;
+	newstr.style = document.getElementById(printpage).style;
 	var oldstr = document.body.innerHTML;
 	document.body.innerHTML = headstr+newstr+footstr;
 	window.print();

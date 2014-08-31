@@ -1,6 +1,11 @@
 module.exports = function(router){
 /* GET home page. */
 	router.get('/', function(req, res) {
-		res.render('index');
+		if(req.user){
+			res.render('index');
+		}
+		else{
+			res.render('login')
+		}
 	});
 };

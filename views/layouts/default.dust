@@ -1,11 +1,5 @@
 <!DOCTYPE HTML>
-	{! {?authenticated}
-	<html manifest="/static/manifest.appcache">
-	{/authenticated}
-	{^authenticated}
-	<html>
-	{/authenticated} !}
-	<html>
+<html>
 	<head>
 		<title>SBHS App</title>
 	    <link rel="stylesheet" type="text/css" href="/static/css/style.min.css" />

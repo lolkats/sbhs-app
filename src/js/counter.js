@@ -5,7 +5,7 @@ const oneSecond = 1000;
 const oneMinute = oneSecond * 60;
 const oneHour = oneMinute * 60;
 const oneDay = oneHour * 24;
-function counter(displayBlock){
+function countdown(displayBlock){
 	var bells;
 	var times;
 	var bellsLoaded = false;
@@ -47,7 +47,13 @@ function counter(displayBlock){
 				yearCalendar = data;
 				calendarLoaded = true;
 				if(window.localStorage){
-					localStorage.setItem('calendarYear', JSON.stringify(yearCalendar));
+					try{
+						localStorage.setItem('calendarYear', JSON.stringify(yearCalendar));
+					}
+					catch(err){
+						console.log("Could not save yearCalendar");
+					}
+					
 				}
 				cb();
 			}
@@ -147,9 +153,7 @@ function counter(displayBlock){
 	    if(hours){
 	    	elements.countdown.innerHTML += hours+"h, ";
 	    }
-	    if(parseInt(minutes)){
-	    	elements.countdown.innerHTML += minutes+"m, ";
-	    }
+	    elements.countdown.innerHTML += minutes+"m, ";
 	    elements.countdown.innerHTML+= seconds+"s";
 	    elements.subject.innerHTML = nextClass.subject;
 	};
@@ -177,5 +181,5 @@ function counter(displayBlock){
 
 };
 $(document).ready(function(){
-	counter(document.getElementById('counter'));
+	countdown(document.getElementById('counter'));
 });

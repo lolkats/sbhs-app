@@ -6,8 +6,13 @@ function getTimetable() {
     success: function(data) {
       timetable = data;
       if (window.localStorage) {
-        localStorage.setItem('timetable', JSON.stringify(data));
-        console.log("Caching timetable");
+        try{
+          localStorage.setItem('timetable', JSON.stringify(data));
+          console.log("Caching timetable");
+        }
+        catch(e){
+          console.log("Failed to cache timetable for some random reason.")
+        }
       } else {
         console.log('localStorage not supported');
       }

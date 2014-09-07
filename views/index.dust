@@ -1,7 +1,10 @@
 {>"layouts/default" /}
 {<body}
 	<h1>Test</h1>
-	<div id="counter" class="center-block"></div>
+<div class="row">
+	<div id="counter" class="large-6 large-centered columns row"></div>
+</div>
+
 {/body}
 {<scripts}
 	<script type="text/javascript" src="/static/js/counter.min.js"></script>

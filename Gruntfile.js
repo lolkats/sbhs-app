@@ -50,19 +50,14 @@ module.exports = function(grunt){
       build : {
         files : {
           'public/js/counter.min.js': 'src/js/counter.js',
-          'public/js/timetable.min.js': 'src/js/timetable.js'
+          'public/js/timetable.min.js': 'src/js/timetable.js',
+          'public/js/vendor.min.js': 'src/js_vendor/*'
         },
       }
     },
     copy: {
       main: {
         files: [
-          {
-            cwd: 'src/js_vendor',
-            src: '**/*',
-            dest: 'public/js/vendor',
-            expand: true
-          },
           {
             cwd: 'src/css',
             src: '**/*',

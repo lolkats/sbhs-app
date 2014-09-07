@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-var debug = require('debug')('my-application');
+var debug = require('debug')('sbhs-app2');
 var app = require('./app');
 
 app.set('port', process.env.OPENSHIFT_NODEJS_PORT || 3000);

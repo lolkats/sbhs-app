@@ -1,2 +1,24 @@
 config.js
 node_modules
+logs
+*.log
+pids
+*.pid
+*.seed
+.grunt
+build/Release
+lib-cov
+coverage
+.lock-wscript
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk

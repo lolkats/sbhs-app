@@ -1,8 +1,10 @@
 {>"layouts/default" /}
 {<body}
-	<h1>Test</h1>
 <div class="row">
-	<div id="counter" class="large-6 large-centered columns row"></div>
+	<div class="row">
+		<div class="col-md-3" id="timetable"></div>
+		<div class="col-md-9" id="counter"></div>
+	</div>
 </div>
 
 {/body}

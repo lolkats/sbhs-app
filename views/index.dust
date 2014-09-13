@@ -1,11 +1,9 @@
 {>"layouts/default" /}
 {<body}
-<div class="row">
 	<div class="row">
-		<div class="col-md-3" id="timetable"></div>
-		<div class="col-md-9" id="counter"></div>
+		<div class="col-md-3" id="timetable_container"></div>
+		<div class="col-md-9" id="counter_container"></div>
 	</div>
-</div>
 
 {/body}
 {<scripts}

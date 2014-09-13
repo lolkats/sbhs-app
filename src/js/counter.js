@@ -102,18 +102,44 @@ function countdown(displayBlock){
 		var arr = $.map(obj, function(el) { return el; });
 		times = [];
 		bells = [];
-		arr.forEach(function(bell){
-			var time = new Date(date);
-			var bellSplit = bell.time.split(":");
-			time.setHours(bellSplit[0],bellSplit[1],0,0);
-			if(bell.bell == "Roll Call"){
+                if(window.authenticated){
+                  if(!window.timetable){
+                    return
+                  }
+                  var time = new Date(date);
+                  var bellSplit = bell.time.split(":");
+                  time.setHours(bellSplit[0],bellSplit[1],0,0);
+                  if(bell.bell == "Roll Call"){
+                    bells.push("School Starts");
+                  }
+                  else{
+                    if(parseInt(bell.bell)){
+                      bells.push("Period "+bell.bell);
+                      return;
+                    }
+                    bells.push(bell.bell);
+                  }
+                  times.push(time);                  
+                }
+                else{
+                  arr.forEach(function(bell){
+                          var time = new Date(date);
+                          var bellSplit = bell.time.split(":");
+                          time.setHours(bellSplit[0],bellSplit[1],0,0);
+                          if(bell.bell == "Roll Call"){
 				bells.push("School Starts");
-			}
-			else{
-				bells.push(bell.bell);
-			}
-			times.push(time);
-		});
+                          }
+                          else{
+                                  if(parseInt(bell.bell)){
+                                      bells.push("Period "+bell.bell);
+                                      return;
+                                  }
+                                  bells.push(bell.bell);
+                          }
+                          times.push(time);
+                  });
+                }
+
 	};
 
 	function findNextClass(){

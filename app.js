@@ -11,14 +11,15 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var session  = require('express-session');
 var bodyParser = require('body-parser');
+var db = require('./lib/db')(config.db);
+var models = db.models;
 
-var models = require('./lib/db')(config.db).models;
 var sbhsAPI = require('./lib/api');
 var sbhs = sbhsAPI.Strategy(config.sbhs,models);
 var app = express();
 
-passport.serializeUser(function(user,done){done(null,user)});
-passport.deserializeUser(function(user,done){done(null,user)});
+passport.serializeUser(function(user,done){return done(null,user)});
+passport.deserializeUser(function(user,done){return done(null,user)});
 
 app.set('views', path.join(__dirname, 'views'));
 
@@ -62,13 +63,21 @@ if (app.get('env') === 'development'){
     app.engine('dust', require('adaro').dust({cache: false}));
 }
 // view engine setup
-
+var sessionStore = session({
+  secret:config.session.secret,
+  cookie: {maxAge:1000*60*60*24*14},
+//  store: new(require('express-sessions'))({
+//    storage:'mongodb',
+//    instance:db.db,
+//    collection:'sessions'
+// })  
+});
 app.use(favicon());
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
-app.use(session(config.session));
+app.use(sessionStore);
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(sbhs);
@@ -136,9 +145,13 @@ app.get('/login', passport.authenticate('sbhs'));
 
 app.get('/login/callback', passport.authenticate('sbhs', {
     successRedirect: '/',
-    failureRedirect: '/'
+    failureRedirect: '/fail'
 }));
 
+app.get('/logout',function(req,res){
+    req.logout();
+    res.redirect('/');
+});
 /// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
@@ -169,6 +182,4 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
-
-
 module.exports = app;
